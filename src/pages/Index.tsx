@@ -1,12 +1,68 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import LandingPage from "@/components/vibe/LandingPage";
+import Questionnaire from "@/components/vibe/Questionnaire";
+import Results from "@/components/vibe/Results";
+
+export type QuestionnaireAnswers = Record<string, number>;
 
 const Index = () => {
+  const [currentView, setCurrentView] = useState<"landing" | "questionnaire" | "results">("landing");
+  const [answers, setAnswers] = useState<QuestionnaireAnswers>({});
+
+  const handleStartQuestionnaire = () => {
+    setCurrentView("questionnaire");
+  };
+
+  const handleCompleteQuestionnaire = (completedAnswers: QuestionnaireAnswers) => {
+    setAnswers(completedAnswers);
+    setCurrentView("results");
+  };
+
+  const handleRestart = () => {
+    setAnswers({});
+    setCurrentView("landing");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <AnimatePresence mode="wait">
+        {currentView === "landing" && (
+          <motion.div
+            key="landing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <LandingPage onStart={handleStartQuestionnaire} />
+          </motion.div>
+        )}
+        
+        {currentView === "questionnaire" && (
+          <motion.div
+            key="questionnaire"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Questionnaire onComplete={handleCompleteQuestionnaire} />
+          </motion.div>
+        )}
+        
+        {currentView === "results" && (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Results answers={answers} onRestart={handleRestart} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
