@@ -65,31 +65,32 @@ export const questions = [
 export function getAdvice(category: string, score: number): string {
   const adviceMap: Record<string, Record<string, string>> = {
     "Voice & Autonomy": {
-      low: "Je medewerkers ervaren weinig ruimte om hun werk zelfstandig in te richten. Overweeg om verantwoordelijkheden te delegeren, ruimte te bieden voor experimenten, en strakkere controle los te laten. Creëer vertrouwen door beslissingen te laten nemen binnen hun rol.",
-      medium: "Er is enige autonomie, maar het potentieel wordt nog niet volledig benut. Vraag hoe mensen hun werk graag organiseren, en stel kaders op die autonomie mogelijk maken. Denk ook aan flexibiliteit in werktijden en inspraak.",
-      high: "Medewerkers ervaren veel vertrouwen en zelfstandigheid. Houd deze cultuur levend door open communicatie, vertrouwen in vakmanschap, en betrokkenheid bij beslissingen te blijven stimuleren.",
+      low: "Je ervaart weinig ruimte om je werk zelf te sturen. Verken waar je meer keuzevrijheid nodig hebt. Spreek uit hoe jij je taken graag organiseert. Vraag om duidelijke kaders die je autonomie ondersteunen.",
+      medium: "Je hebt enige autonomie, maar niet genoeg. Benoem waar je meer regie wil. Zoek flexibiliteit in planning, aanpak en werkvormen. Kaart concrete hindernissen aan die je groei beperken.",
+      high: "Je voelt veel vertrouwen en zelfstandigheid. Blijf actief aangeven wat je nodig hebt om dit niveau te behouden. Deel ideeën, neem initiatief en bewaak je eigen ruimte en focus.",
     },
     "Impact & Purpose": {
-      low: "De verbinding met het 'waarom' ontbreekt. Medewerkers weten niet hoe hun werk bijdraagt aan iets groters. Zorg dat je regelmatig de missie en het grotere doel van het team of organisatie bespreekt. Deel impactverhalen en betrek medewerkers in doelen.",
-      medium: "Er is enig besef van impact, maar het kan sterker. Stimuleer reflectie op het nut van ieders bijdrage. Deel klant- of teamfeedback en koppel dagelijkse taken aan het grotere plaatje.",
-      high: "Je team voelt duidelijk hoe hun werk bijdraagt aan een groter doel. Blijf successen en impact zichtbaar maken. Geef ruimte om persoonlijke waarden te integreren in het werk.",
+      low: "Je mist een duidelijke link tussen je werk en het grotere doel. Onderzoek wat jou drijft. Vraag hoe jouw taken bijdragen. Zoek verhalen, feedback of doelen die betekenis geven aan je werkdag.",
+      medium: "Je hebt enig zicht op je impact, maar het kan sterker. Reflecteer op wat jouw bijdrage waardevol maakt. Vraag om voorbeelden van impact. Leg bewust de koppeling tussen je dagelijkse taken en het grotere geheel.",
+      high: "Je voelt duidelijk dat je werk ertoe doet. Blijf actief zoeken naar kansen om je waarden te verbinden aan je rol. Deel successen en benoem de impact die jij ziet of voelt.",
     },
     "Bold Leadership": {
-      low: "Er is weinig persoonlijke connectie met leiderschap. Dit kan leiden tot wantrouwen of afstand. Investeer in individuele gesprekken, toon oprechte interesse en luister actief. Zorg dat verwachtingen helder zijn en dat er aandacht is voor groei.",
-      medium: "Je doet al inspanningen om betrokken leiderschap te tonen, maar het is nog niet stabiel. Versterk je leiderschap met regelmatige feedbackgesprekken, en wees beschikbaar als coach, niet alleen als beoordelaar.",
-      high: "Je leiding wordt als menselijk, steunend en duidelijk ervaren. Koester deze band. Blijf luisteren, ondersteunen en ruimte geven voor persoonlijke ontwikkeling en moeilijke gesprekken.",
+      low: "Je ervaart weinig verbinding met je leidinggevende. Dit kan je vertrouwen of motivatie verlagen. Vraag om helderheid, verwachtingen en tijd voor 1-op-1 gesprekken. Zet zelf ook stappen om je noden uit te spreken.",
+      medium: "Je ervaart steun, maar niet consequent. Vraag regelmaat in feedback. Zoek duidelijkheid wanneer iets onduidelijk voelt. Benoem wanneer coaching je helpt en waar je meer begeleiding wil.",
+      high: "Je voelt je gesteund en gehoord. Blijf dit onderhouden door open te communiceren. Vraag om coaching wanneer je wil groeien en geef aan wat goed werkt in jullie samenwerking.",
     },
     "Recognition & Reward": {
-      low: "Medewerkers voelen zich onvoldoende erkend of eerlijk beloond. Begin met kleine, oprechte waardering, zowel individueel als in team. Bespreek openlijk hoe beloning en doorgroeikansen werken.",
-      medium: "Er is waardering, maar het voelt nog niet altijd eerlijk of passend. Geef frequente inhoudelijke feedback en check hoe teamleden graag erkenning ontvangen. Transparantie over beloningen helpt.",
-      high: "Mensen voelen zich gewaardeerd en eerlijk behandeld. Fantastisch! Blijf feedback geven en successen vieren op manieren die aansluiten bij de persoon (privé/publiek/informeel).",
+      low: "Je voelt je weinig erkend. Benoem welke vormen van waardering jou motiveren. Vraag om feedback op je werk. Maak doorgroeikansen en verwachtingen bespreekbaar.",
+      medium: "Je ervaart erkenning, maar niet altijd op de juiste manier. Geef aan hoe jij waardering graag ontvangt. Vraag om specifieke feedback. Verken hoe beloning en groei voor jou kunnen passen.",
+      high: "Je voelt je gewaardeerd en eerlijk behandeld. Houd dit levend door actief feedback te vragen en je successen te delen. Geef ook aan welke vormen van erkenning voor jou het best werken.",
     },
     "Reflectie": {
-      low: "De algehele motivatie en betrokkenheid lijkt laag. Neem dit serieus en ga in gesprek over wat er nodig is om het tij te keren. Luister zonder oordeel en pak concrete punten aan.",
-      medium: "Er is ruimte voor verbetering in de algehele ervaring. Blijf investeren in de andere VIBE-thema's en monitor regelmatig hoe het gaat.",
-      high: "Medewerkers zijn loyaal en tevreden. Blijf investeren in alle aspecten van VIBE om deze positieve spiraal te behouden.",
+      low: "Je motivatie voelt laag. Sta stil bij wat je belemmert. Kaart dit aan in een gesprek. Formuleer één concrete stap die je motivatie kan verbeteren.",
+      medium: "Je zit in een gemiddelde flow. Er is ruimte om te groeien. Volg je energieniveau op en benoem wat je nodig hebt in de andere VIBE-thema’s.",
+      high: "Je zit goed in je vel en voelt je betrokken. Blijf bewust investeren in je werkervaring. Houd aandacht voor balans, groei en energie om deze lijn vast te houden.",
     },
   };
+
 
   const level = score < 2.5 ? "low" : score < 3.5 ? "medium" : "high";
   return adviceMap[category]?.[level] || "Blijf investeren in dit thema.";
