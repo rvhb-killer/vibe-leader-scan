@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Download, RotateCcw } from "lucide-react";
+import { Download, RotateCcw, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Radar, 
@@ -10,9 +10,10 @@ import {
   PolarRadiusAxis, 
   ResponsiveContainer 
 } from "recharts";
-import { categories, getAdvice } from "@/lib/vibeQuestions";
+import { categories, getAdvice, calculateHerzbergAnalysis, questions } from "@/lib/vibeQuestions";
 import type { QuestionnaireAnswers } from "@/pages/Index";
 import jsPDF from "jspdf";
+import HerzbergMatrix from "./HerzbergMatrix";
 
 interface ResultsProps {
   answers: QuestionnaireAnswers;
@@ -20,19 +21,23 @@ interface ResultsProps {
 }
 
 const Results = ({ answers, onRestart }: ResultsProps) => {
-  // Calculate scores per category
+  // Calculate VIBE scores per category
   const scores: Record<string, { score: number; count: number }> = {};
   
   Object.entries(answers).forEach(([key, value]) => {
     const questionNum = parseInt(key.replace('q', ''));
-    const category = getQuestionCategory(questionNum);
+    const question = questions.find(q => q.id === questionNum);
     
-    if (!scores[category]) {
-      scores[category] = { score: 0, count: 0 };
+    if (question) {
+      const category = question.category;
+      
+      if (!scores[category]) {
+        scores[category] = { score: 0, count: 0 };
+      }
+      
+      scores[category].score += value;
+      scores[category].count += 1;
     }
-    
-    scores[category].score += value;
-    scores[category].count += 1;
   });
 
   // Calculate averages
@@ -40,6 +45,9 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
   Object.keys(scores).forEach(cat => {
     averages[cat] = scores[cat].score / scores[cat].count;
   });
+
+  // Calculate Herzberg analysis
+  const herzberg = calculateHerzbergAnalysis(answers);
 
   // Prepare chart data
   const chartData = Object.keys(categories).map(cat => ({
@@ -57,6 +65,11 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
     doc.setFontSize(12);
     let yPos = 40;
     
+    // VIBE Scores
+    doc.setFont(undefined, 'bold');
+    doc.text("VIBE Scores", 20, yPos);
+    yPos += 10;
+    
     Object.keys(categories).forEach(cat => {
       const avg = averages[cat]?.toFixed(2) || "0.00";
       const interpretation = getInterpretation(averages[cat] || 0);
@@ -71,11 +84,37 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
       doc.text(splitAdvice, 20, yPos);
       yPos += (splitAdvice.length * 7) + 5;
       
-      if (yPos > 270) {
+      if (yPos > 250) {
         doc.addPage();
         yPos = 20;
       }
     });
+
+    // Herzberg Analysis
+    yPos += 10;
+    if (yPos > 230) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFont(undefined, 'bold');
+    doc.text("Herzberg Motivatie-Analyse", 20, yPos);
+    yPos += 10;
+    
+    doc.setFont(undefined, 'normal');
+    doc.text(`Hygiëne Score: ${herzberg.hygieneScore.toFixed(2)}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Motivator Score: ${herzberg.motivatorScore.toFixed(2)}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Profiel: ${getProfileLabel(herzberg.profile)}`, 20, yPos);
+    yPos += 10;
+    
+    doc.setFont(undefined, 'bold');
+    doc.text("Herzberg Advies:", 20, yPos);
+    yPos += 7;
+    doc.setFont(undefined, 'normal');
+    const splitHerzbergAdvice = doc.splitTextToSize(herzberg.advice, 170);
+    doc.text(splitHerzbergAdvice, 20, yPos);
     
     doc.save("VIBE_Rapport.pdf");
   };
@@ -93,11 +132,11 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
               🎉 Jouw VIBE Resultaten
             </h1>
             <p className="text-lg text-muted-foreground">
-              Ontdek je leiderschapsprofiel en concrete actiepunten
+              Ontdek je leiderschapsprofiel én motivatie-analyse
             </p>
           </div>
 
-          {/* Chart */}
+          {/* VIBE Radar Chart */}
           <Card className="p-8 shadow-lg mb-8">
             <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
               Jouw Leiderschapsprofiel
@@ -122,13 +161,53 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
             </ResponsiveContainer>
           </Card>
 
-          {/* Detailed Results */}
+          {/* Herzberg Analysis */}
+          <Card className="p-8 shadow-lg mb-8 border-2 border-accent/20">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <h2 className="text-2xl font-display font-semibold text-center text-primary">
+                Herzberg Motivatie-Analyse
+              </h2>
+              <div className="group relative">
+                <Info className="h-5 w-5 text-muted-foreground cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-popover border rounded-lg shadow-lg text-sm z-10">
+                  <p className="text-popover-foreground">
+                    <strong>Herzberg's Two-Factor Theory:</strong> Onderscheidt hygiënefactoren (voorkomen ontevredenheid) van motivatoren (stimuleren tevredenheid).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <HerzbergMatrix 
+              profile={herzberg.profile}
+              hygieneScore={herzberg.hygieneScore}
+              motivatorScore={herzberg.motivatorScore}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8 bg-muted/50 p-6 rounded-lg"
+            >
+              <p className="text-sm font-medium mb-2 text-primary flex items-center gap-2">
+                <span className="text-lg">💡</span> Herzberg Advies:
+              </p>
+              <p className="text-muted-foreground leading-relaxed">{herzberg.advice}</p>
+            </motion.div>
+          </Card>
+
+          {/* Detailed VIBE Results */}
+          <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
+            Gedetailleerde VIBE Scores
+          </h2>
+          
           <div className="space-y-6 mb-8">
             {Object.keys(categories).map((cat, index) => {
               const avg = averages[cat] || 0;
               const interpretation = getInterpretation(avg);
               const advice = getAdvice(cat, avg);
               const categoryInfo = categories[cat as keyof typeof categories];
+              const level = avg < 2.5 ? "low" : avg < 3.5 ? "medium" : "high";
               
               return (
                 <motion.div
@@ -200,18 +279,20 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
 };
 
 // Helper functions
-function getQuestionCategory(questionNum: number): string {
-  if (questionNum <= 7) return "Voice & Autonomy";
-  if (questionNum <= 14) return "Impact & Purpose";
-  if (questionNum <= 21) return "Bold Leadership";
-  if (questionNum <= 28) return "Recognition & Reward";
-  return "Reflectie";
-}
-
 function getInterpretation(score: number): string {
   if (score < 2.5) return "Laag - Directe aandacht nodig";
   if (score < 3.5) return "Gemiddeld - Ruimte voor verbetering";
   return "Sterk - Goed bezig!";
+}
+
+function getProfileLabel(profile: string): string {
+  const labels: Record<string, string> = {
+    "low-low": "Kritiek Gebied",
+    "low-high": "Gemotiveerd maar Gehinderd",
+    "high-low": "Comfortzone",
+    "high-high": "Optimale Zone",
+  };
+  return labels[profile] || profile;
 }
 
 export default Results;
