@@ -21,45 +21,54 @@ export const categories = {
   },
 };
 
-export const questions = [
-  // Voice & Autonomy (1-7)
-  { id: 1, text: "Ik heb de vrijheid om mijn werk op mijn eigen manier te organiseren.", category: "Voice & Autonomy" },
-  { id: 2, text: "Mijn leidinggevende laat mij zelfstandig beslissingen nemen.", category: "Voice & Autonomy" },
-  { id: 3, text: "Ik voel dat mijn organisatie vertrouwen heeft in mijn vaardigheden.", category: "Voice & Autonomy" },
-  { id: 4, text: "Ik krijg ruimte om te experimenteren of fouten te maken.", category: "Voice & Autonomy" },
-  { id: 5, text: "Ik word niet onnodig gecontroleerd op kleine details.", category: "Voice & Autonomy" },
-  { id: 6, text: "Ik kan zelf mijn werktijden (deels) bepalen.", category: "Voice & Autonomy" },
-  { id: 7, text: "Mijn mening wordt serieus genomen in beslissingen die mij raken.", category: "Voice & Autonomy" },
+export type HerzbergType = "motivator" | "hygiene";
+
+export interface Question {
+  id: number;
+  text: string;
+  category: string;
+  herzberg: HerzbergType;
+}
+
+export const questions: Question[] = [
+  // Voice & Autonomy (1-7) - Mix of motivator and hygiene
+  { id: 1, text: "Ik heb de vrijheid om mijn werk op mijn eigen manier te organiseren.", category: "Voice & Autonomy", herzberg: "motivator" },
+  { id: 2, text: "Mijn leidinggevende laat mij zelfstandig beslissingen nemen.", category: "Voice & Autonomy", herzberg: "motivator" },
+  { id: 3, text: "Ik voel dat mijn organisatie vertrouwen heeft in mijn vaardigheden.", category: "Voice & Autonomy", herzberg: "motivator" },
+  { id: 4, text: "Ik krijg ruimte om te experimenteren of fouten te maken.", category: "Voice & Autonomy", herzberg: "motivator" },
+  { id: 5, text: "Ik word niet onnodig gecontroleerd op kleine details.", category: "Voice & Autonomy", herzberg: "hygiene" },
+  { id: 6, text: "Ik kan zelf mijn werktijden (deels) bepalen.", category: "Voice & Autonomy", herzberg: "hygiene" },
+  { id: 7, text: "Mijn mening wordt serieus genomen in beslissingen die mij raken.", category: "Voice & Autonomy", herzberg: "motivator" },
   
-  // Impact & Purpose (8-14)
-  { id: 8, text: "Ik begrijp hoe mijn werk bijdraagt aan de bredere missie.", category: "Impact & Purpose" },
-  { id: 9, text: "Mijn werk betekent iets voor klanten, collega's of de samenleving.", category: "Impact & Purpose" },
-  { id: 10, text: "We bespreken regelmatig waarom we doen wat we doen.", category: "Impact & Purpose" },
-  { id: 11, text: "De doelen van mijn team zijn helder en betekenisvol.", category: "Impact & Purpose" },
-  { id: 12, text: "Ik krijg te horen welke impact mijn werk heeft gehad.", category: "Impact & Purpose" },
-  { id: 13, text: "Ik voel trots bij wat mijn team of organisatie bereikt.", category: "Impact & Purpose" },
-  { id: 14, text: "Ik kan mijn persoonlijke waarden verbinden aan mijn werk.", category: "Impact & Purpose" },
+  // Impact & Purpose (8-14) - Mostly motivators
+  { id: 8, text: "Ik begrijp hoe mijn werk bijdraagt aan de bredere missie.", category: "Impact & Purpose", herzberg: "motivator" },
+  { id: 9, text: "Mijn werk betekent iets voor klanten, collega's of de samenleving.", category: "Impact & Purpose", herzberg: "motivator" },
+  { id: 10, text: "We bespreken regelmatig waarom we doen wat we doen.", category: "Impact & Purpose", herzberg: "hygiene" },
+  { id: 11, text: "De doelen van mijn team zijn helder en betekenisvol.", category: "Impact & Purpose", herzberg: "motivator" },
+  { id: 12, text: "Ik krijg te horen welke impact mijn werk heeft gehad.", category: "Impact & Purpose", herzberg: "motivator" },
+  { id: 13, text: "Ik voel trots bij wat mijn team of organisatie bereikt.", category: "Impact & Purpose", herzberg: "motivator" },
+  { id: 14, text: "Ik kan mijn persoonlijke waarden verbinden aan mijn werk.", category: "Impact & Purpose", herzberg: "motivator" },
   
-  // Bold Leadership (15-21)
-  { id: 15, text: "Mijn leidinggevende toont interesse in mij als persoon.", category: "Bold Leadership" },
-  { id: 16, text: "Ik kan bij mijn leidinggevende terecht met zorgen.", category: "Bold Leadership" },
-  { id: 17, text: "We hebben regelmatig 1-op-1 gesprekken over mijn werk of ontwikkeling.", category: "Bold Leadership" },
-  { id: 18, text: "Mijn leidinggevende luistert actief en neemt mijn feedback mee.", category: "Bold Leadership" },
-  { id: 19, text: "Ik krijg duidelijke verwachtingen en doelstellingen.", category: "Bold Leadership" },
-  { id: 20, text: "Mijn manager helpt mij groeien, niet enkel presteren.", category: "Bold Leadership" },
-  { id: 21, text: "Problemen of conflicten worden snel en eerlijk aangepakt.", category: "Bold Leadership" },
+  // Bold Leadership (15-21) - Mix of hygiene and motivator
+  { id: 15, text: "Mijn leidinggevende toont interesse in mij als persoon.", category: "Bold Leadership", herzberg: "hygiene" },
+  { id: 16, text: "Ik kan bij mijn leidinggevende terecht met zorgen.", category: "Bold Leadership", herzberg: "hygiene" },
+  { id: 17, text: "We hebben regelmatig 1-op-1 gesprekken over mijn werk of ontwikkeling.", category: "Bold Leadership", herzberg: "hygiene" },
+  { id: 18, text: "Mijn leidinggevende luistert actief en neemt mijn feedback mee.", category: "Bold Leadership", herzberg: "hygiene" },
+  { id: 19, text: "Ik krijg duidelijke verwachtingen en doelstellingen.", category: "Bold Leadership", herzberg: "hygiene" },
+  { id: 20, text: "Mijn manager helpt mij groeien, niet enkel presteren.", category: "Bold Leadership", herzberg: "motivator" },
+  { id: 21, text: "Problemen of conflicten worden snel en eerlijk aangepakt.", category: "Bold Leadership", herzberg: "hygiene" },
   
-  // Recognition & Reward (22-28)
-  { id: 22, text: "Ik krijg waardering los van formele beloningen.", category: "Recognition & Reward" },
-  { id: 23, text: "Successen worden gevierd, individueel of in team.", category: "Recognition & Reward" },
-  { id: 24, text: "Ik ontvang voldoende positieve feedback.", category: "Recognition & Reward" },
-  { id: 25, text: "Ik voel me eerlijk beloond voor mijn werk.", category: "Recognition & Reward" },
-  { id: 26, text: "Beloningen zijn transparant en eerlijk geregeld.", category: "Recognition & Reward" },
-  { id: 27, text: "Doorgroeimogelijkheden zijn duidelijk voor iedereen.", category: "Recognition & Reward" },
-  { id: 28, text: "Ik krijg waardering op een manier die bij mij past.", category: "Recognition & Reward" },
+  // Recognition & Reward (22-28) - Mix of motivator and hygiene
+  { id: 22, text: "Ik krijg waardering los van formele beloningen.", category: "Recognition & Reward", herzberg: "motivator" },
+  { id: 23, text: "Successen worden gevierd, individueel of in team.", category: "Recognition & Reward", herzberg: "motivator" },
+  { id: 24, text: "Ik ontvang voldoende positieve feedback.", category: "Recognition & Reward", herzberg: "motivator" },
+  { id: 25, text: "Ik voel me eerlijk beloond voor mijn werk.", category: "Recognition & Reward", herzberg: "hygiene" },
+  { id: 26, text: "Beloningen zijn transparant en eerlijk geregeld.", category: "Recognition & Reward", herzberg: "hygiene" },
+  { id: 27, text: "Doorgroeimogelijkheden zijn duidelijk voor iedereen.", category: "Recognition & Reward", herzberg: "hygiene" },
+  { id: 28, text: "Ik krijg waardering op een manier die bij mij past.", category: "Recognition & Reward", herzberg: "motivator" },
   
   // Reflectie (29)
-  { id: 29, text: "Ik zou opnieuw voor deze organisatie kiezen.", category: "Reflectie" },
+  { id: 29, text: "Ik zou opnieuw voor deze organisatie kiezen.", category: "Reflectie", herzberg: "motivator" },
 ];
 
 export function getAdvice(category: string, score: number): string {
@@ -86,12 +95,67 @@ export function getAdvice(category: string, score: number): string {
     },
     "Reflectie": {
       low: "Je motivatie voelt laag. Sta stil bij wat je belemmert. Kaart dit aan in een gesprek. Formuleer één concrete stap die je motivatie kan verbeteren.",
-      medium: "Je zit in een gemiddelde flow. Er is ruimte om te groeien. Volg je energieniveau op en benoem wat je nodig hebt in de andere VIBE-thema’s.",
+      medium: "Je zit in een gemiddelde flow. Er is ruimte om te groeien. Volg je energieniveau op en benoem wat je nodig hebt in de andere VIBE-thema's.",
       high: "Je zit goed in je vel en voelt je betrokken. Blijf bewust investeren in je werkervaring. Houd aandacht voor balans, groei en energie om deze lijn vast te houden.",
     },
   };
 
-
   const level = score < 2.5 ? "low" : score < 3.5 ? "medium" : "high";
   return adviceMap[category]?.[level] || "Blijf investeren in dit thema.";
+}
+
+// Herzberg profile types
+export type HerzbergProfile = "low-low" | "low-high" | "high-low" | "high-high";
+
+export interface HerzbergAnalysis {
+  hygieneScore: number;
+  motivatorScore: number;
+  profile: HerzbergProfile;
+  advice: string;
+  illustrationQuadrant: HerzbergProfile;
+}
+
+export function calculateHerzbergAnalysis(answers: Record<string, number>): HerzbergAnalysis {
+  let totalHygiene = 0;
+  let countHygiene = 0;
+  let totalMotivator = 0;
+  let countMotivator = 0;
+
+  Object.entries(answers).forEach(([key, value]) => {
+    const questionNum = parseInt(key.replace('q', ''));
+    const question = questions.find(q => q.id === questionNum);
+    
+    if (question) {
+      if (question.herzberg === "hygiene") {
+        totalHygiene += value;
+        countHygiene++;
+      } else {
+        totalMotivator += value;
+        countMotivator++;
+      }
+    }
+  });
+
+  const hygieneScore = countHygiene > 0 ? totalHygiene / countHygiene : 0;
+  const motivatorScore = countMotivator > 0 ? totalMotivator / countMotivator : 0;
+
+  const hygieneLevel = hygieneScore >= 3 ? "high" : "low";
+  const motivatorLevel = motivatorScore >= 3 ? "high" : "low";
+
+  const profile: HerzbergProfile = `${hygieneLevel}-${motivatorLevel}` as HerzbergProfile;
+
+  const adviceMap: Record<HerzbergProfile, string> = {
+    "low-low": "Je basis én je motivatie staan onder druk. Werk aan duidelijkheid, werkdruk en structuur. Bouw daarna aan erkenning, groei en betekenis.",
+    "low-high": "Je hebt motivatie, maar obstakels hinderen je. Versterk duidelijkheid, processen en afspraken om je motivatie duurzaam te houden.",
+    "high-low": "Je basis is goed, maar je voelt weinig drive. Zoek meer uitdaging, eigenaarschap en betekenis.",
+    "high-high": "Je werkt in sterke omstandigheden en voelt motivatie. Richt je op verdieping, innovatie en lange-termijnontwikkeling.",
+  };
+
+  return {
+    hygieneScore,
+    motivatorScore,
+    profile,
+    advice: adviceMap[profile],
+    illustrationQuadrant: profile,
+  };
 }
