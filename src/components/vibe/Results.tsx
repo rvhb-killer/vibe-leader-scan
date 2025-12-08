@@ -110,11 +110,28 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
     yPos += 10;
     
     doc.setFont(undefined, 'bold');
-    doc.text("Herzberg Advies:", 20, yPos);
+    doc.text("Herzberg Analyse:", 20, yPos);
     yPos += 7;
     doc.setFont(undefined, 'normal');
-    const splitHerzbergAdvice = doc.splitTextToSize(herzberg.advice, 170);
-    doc.text(splitHerzbergAdvice, 20, yPos);
+    doc.text(`${herzberg.adviceDetail.title} - ${herzberg.adviceDetail.subtitle}`, 20, yPos);
+    yPos += 10;
+    
+    doc.text("Interpretatie:", 20, yPos);
+    yPos += 6;
+    herzberg.adviceDetail.interpretation.forEach(item => {
+      const split = doc.splitTextToSize(`• ${item}`, 170);
+      doc.text(split, 25, yPos);
+      yPos += split.length * 5;
+    });
+    yPos += 4;
+    
+    doc.text("Concrete stappen:", 20, yPos);
+    yPos += 6;
+    herzberg.adviceDetail.steps.forEach(item => {
+      const split = doc.splitTextToSize(`• ${item}`, 170);
+      doc.text(split, 25, yPos);
+      yPos += split.length * 5;
+    });
     
     doc.save("VIBE_Rapport.pdf");
   };
@@ -187,12 +204,48 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="mt-8 bg-muted/50 p-6 rounded-lg"
+              className="mt-8 bg-muted/50 p-6 rounded-lg space-y-6"
             >
-              <p className="text-sm font-medium mb-2 text-primary flex items-center gap-2">
-                <span className="text-lg">💡</span> Herzberg Advies:
-              </p>
-              <p className="text-muted-foreground leading-relaxed">{herzberg.advice}</p>
+              <div>
+                <h3 className="text-lg font-semibold text-primary mb-1">{herzberg.adviceDetail.title}</h3>
+                <p className="text-accent font-medium">{herzberg.adviceDetail.subtitle}</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">📋 Interpretatie</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.interpretation.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">💡 Wat dit betekent</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.meaning.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">🎯 Prioriteiten</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.priorities.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">✅ Concrete stappen</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.steps.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </motion.div>
           </Card>
 

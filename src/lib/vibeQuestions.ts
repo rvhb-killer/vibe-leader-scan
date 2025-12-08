@@ -107,11 +107,20 @@ export function getAdvice(category: string, score: number): string {
 // Herzberg profile types
 export type HerzbergProfile = "low-low" | "low-high" | "high-low" | "high-high";
 
+export interface HerzbergAdviceDetail {
+  title: string;
+  subtitle: string;
+  interpretation: string[];
+  meaning: string[];
+  priorities: string[];
+  steps: string[];
+}
+
 export interface HerzbergAnalysis {
   hygieneScore: number;
   motivatorScore: number;
   profile: HerzbergProfile;
-  advice: string;
+  adviceDetail: HerzbergAdviceDetail;
   illustrationQuadrant: HerzbergProfile;
 }
 
@@ -144,18 +153,112 @@ export function calculateHerzbergAnalysis(answers: Record<string, number>): Herz
 
   const profile: HerzbergProfile = `${hygieneLevel}-${motivatorLevel}` as HerzbergProfile;
 
-  const adviceMap: Record<HerzbergProfile, string> = {
-    "low-low": "Je basis én je motivatie staan onder druk. Werk aan duidelijkheid, werkdruk en structuur. Bouw daarna aan erkenning, groei en betekenis.",
-    "low-high": "Je hebt motivatie, maar obstakels hinderen je. Versterk duidelijkheid, processen en afspraken om je motivatie duurzaam te houden.",
-    "high-low": "Je basis is goed, maar je voelt weinig drive. Zoek meer uitdaging, eigenaarschap en betekenis.",
-    "high-high": "Je werkt in sterke omstandigheden en voelt motivatie. Richt je op verdieping, innovatie en lange-termijnontwikkeling.",
+  const adviceMap: Record<HerzbergProfile, HerzbergAdviceDetail> = {
+    "low-low": {
+      title: "Lage hygiëne & lage motivatie",
+      subtitle: "Slechtste situatie. Je ervaart klachten én weinig motivatie.",
+      interpretation: [
+        "Je werkcontext voelt onduidelijk, instabiel of vermoeiend.",
+        "Tegelijk geeft je werk weinig energie of voldoening.",
+        "Je mist zowel basisvoorwaarden als motiverende elementen."
+      ],
+      meaning: [
+        "Je ervaart hindernissen in samenwerking, leiding of werkdruk.",
+        "Je voelt weinig erkenning, groei of betekenis.",
+        "De kans op frustratie of uitval is groter."
+      ],
+      priorities: [
+        "Herstel basis: duidelijkheid, werkdruk en afspraken.",
+        "Versterk veiligheid en betrouwbaarheid in leiding en team.",
+        "Bouw daarna aan motivatie: groei, erkenning en autonomie."
+      ],
+      steps: [
+        "Vraag om duidelijkere verwachtingen.",
+        "Maak afspraken over werkdruk en prioriteiten.",
+        "Zoek één taak die energie kan geven en vergroot die.",
+        "Plan een gesprek met je leidinggevende over wat je nodig hebt."
+      ]
+    },
+    "low-high": {
+      title: "Lage hygiëne & hoge motivatie",
+      subtitle: "Je bent gemotiveerd, maar je werkcontext belemmert je.",
+      interpretation: [
+        "Je voelt interne drive en betrokkenheid.",
+        "Maar er zijn hinderlijke omstandigheden: werkdruk, processen, leiding, beloning of samenwerking."
+      ],
+      meaning: [
+        "Je motivatie is echt, maar staat onder druk.",
+        "De kans op teleurstelling of demotivatie stijgt als problemen blijven.",
+        "Je prestaties kunnen hoger liggen dan wat de omgeving toelaat."
+      ],
+      priorities: [
+        "Versterk basisvoorwaarden snel.",
+        "Bescherm je motivatie tegen frustratie.",
+        "Verwijder ruis: onduidelijkheid, werkdruk, botsingen, procedures."
+      ],
+      steps: [
+        "Benoem duidelijke bottlenecks die energie kosten.",
+        "Vraag om betere werkafspraken of minder frictie.",
+        "Bewaak je grenzen zodat je drive niet uitdooft.",
+        "Vraag om ondersteuning of stabiliteit in processen."
+      ]
+    },
+    "high-low": {
+      title: "Hoge hygiëne & lage motivatie",
+      subtitle: "Je ervaart weinig klachten, maar je voelt geen echte drive.",
+      interpretation: [
+        "De basis zit goed: samenwerking, leiding, structuur en beloning zijn voldoende.",
+        "Maar je voelt te weinig uitdaging, betekenis of erkenning."
+      ],
+      meaning: [
+        "Je hebt comfort, maar weinig voldoening.",
+        "De kans op verveling, stilstand of routine is hoog.",
+        "Je benut je potentieel niet volledig."
+      ],
+      priorities: [
+        "Verhoog uitdaging en eigenaarschap.",
+        "Zoek betekenis in werk en resultaten.",
+        "Laat je talenten meer wegen op je rol."
+      ],
+      steps: [
+        "Vraag een project dat meer verantwoordelijkheid vraagt.",
+        "Zoek taken die aansluiten bij je talenten of ambities.",
+        "Vraag om ontwikkelings- of groeikansen.",
+        "Deel je ideeën en vraag om ruimte om ze uit te voeren."
+      ]
+    },
+    "high-high": {
+      title: "Hoge hygiëne & hoge motivatie",
+      subtitle: "Ideale combinatie. Je ervaart stabiliteit én drive.",
+      interpretation: [
+        "Je werk is goed georganiseerd.",
+        "Je voelt energie, erkenning, groei of betekenis.",
+        "Je zit in een sterke omgeving."
+      ],
+      meaning: [
+        "Je presteert waarschijnlijk goed.",
+        "Je ervaart balans tussen comfort en uitdaging.",
+        "Je bent waardevol voor het team en de organisatie."
+      ],
+      priorities: [
+        "Verdiep expertise en houd je groei gaande.",
+        "Blijf bewaken wat je nodig hebt.",
+        "Gebruik je positie om impact te vergroten."
+      ],
+      steps: [
+        "Neem uitdagende of innovatieve projecten op.",
+        "Deel successen en best practices in je team.",
+        "Bouw actief aan je lange-termijnontwikkeling.",
+        "Zoek kansen om anderen te ondersteunen of coachen."
+      ]
+    }
   };
 
   return {
     hygieneScore,
     motivatorScore,
     profile,
-    advice: adviceMap[profile],
+    adviceDetail: adviceMap[profile],
     illustrationQuadrant: profile,
   };
 }
