@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Users, Target, Sparkles, Heart } from "lucide-react";
+import { ArrowRight, Users, Target, Sparkles, Heart, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface LandingPageProps {
   onStart: () => void;
+  onViewDashboard: () => void;
 }
 
-const LandingPage = ({ onStart }: LandingPageProps) => {
+const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -33,14 +34,26 @@ const LandingPage = ({ onStart }: LandingPageProps) => {
               Ontdek hoe jij leiderschap en motivatie binnen jouw team kan versterken met evidence-based inzichten.
             </p>
             
-            <Button 
-              onClick={onStart}
-              size="lg"
-              className="gradient-accent hover:opacity-90 transition-opacity text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl"
-            >
-              Start de VIBE-scan
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                onClick={onStart}
+                size="lg"
+                className="gradient-accent hover:opacity-90 transition-opacity text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl"
+              >
+                Start de VIBE-scan
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              
+              <Button 
+                onClick={onViewDashboard}
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 py-6 rounded-xl bg-white/10 border-white/30 hover:bg-white/20 text-white"
+              >
+                <BarChart3 className="mr-2 h-5 w-5" />
+                Team Dashboard
+              </Button>
+            </div>
             
             <p className="mt-6 text-sm text-white/70">
               ⏱️ Slechts 5 minuten • 29 vragen • Directe inzichten

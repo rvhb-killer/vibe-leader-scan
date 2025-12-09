@@ -14,13 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      responses: {
+        Row: {
+          answers: Json
+          company_hash: string
+          created_at: string
+          id: string
+          manager_expectations: Json | null
+          role: string
+          team: string | null
+        }
+        Insert: {
+          answers: Json
+          company_hash: string
+          created_at?: string
+          id?: string
+          manager_expectations?: Json | null
+          role: string
+          team?: string | null
+        }
+        Update: {
+          answers?: Json
+          company_hash?: string
+          created_at?: string
+          id?: string
+          manager_expectations?: Json | null
+          role?: string
+          team?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_team_results: {
+        Args: { p_company_hash: string; p_team?: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
