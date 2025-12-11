@@ -149,14 +149,14 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
               🎉 Jouw VIBE Resultaten
             </h1>
             <p className="text-lg text-muted-foreground">
-              Ontdek je leiderschapsprofiel én motivatie-analyse
+              Ontdek je bedrijfsomgeving en motivatie
             </p>
           </div>
 
           {/* VIBE Radar Chart */}
           <Card className="p-8 shadow-lg mb-8">
             <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
-              Jouw Leiderschapsprofiel
+              Jouw motivator's
             </h2>
             <ResponsiveContainer width="100%" height={400}>
               <RadarChart data={chartData}>
