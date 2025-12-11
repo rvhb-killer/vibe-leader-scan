@@ -152,6 +152,11 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
               Ontdek je bedrijfsomgeving en motivatie
             </p>
           </div>
+          <div>
+           <p className="text-lg text-muted-foreground">
+              Je beantwoordde 24 stellingen over hoe jij jouw werkcontext en motivatie beleeft. Op basis daarvan krijg je een score per bouwsteen van het VIBE-model, gekoppeld aan de drie psychologische basisbehoeften uit de Self-Determination Theory. De combinatie van die scores toont hoe sterk je motivatie is opgebouwd uit autonomie, competentie en verbondenheid – en welke gebieden aandacht vragen.        
+           </p> 
+          </div>
 
           {/* VIBE Radar Chart */}
           <Card className="p-8 shadow-lg mb-8">
