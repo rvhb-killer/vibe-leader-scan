@@ -5,12 +5,14 @@ interface HerzbergMatrixProps {
   profile: HerzbergProfile;
   hygieneScore: number;
   motivatorScore: number;
+  isManager?: boolean;
 }
 
 const quadrantInfo = {
   "low-low": {
     title: "Kritiek Gebied",
     subtitle: "Klachten én geen motivatie",
+    managerSubtitle: "Weinig grip én weinig impact",
     emoji: "⚠️",
     bgClass: "bg-red-100 dark:bg-red-950",
     borderClass: "border-red-500",
@@ -19,6 +21,7 @@ const quadrantInfo = {
   "low-high": {
     title: "Gemotiveerd maar Gehinderd",
     subtitle: "Motivatie ondanks obstakels",
+    managerSubtitle: "Goede intenties, beperkte grip",
     emoji: "🔥",
     bgClass: "bg-amber-100 dark:bg-amber-950",
     borderClass: "border-amber-500",
@@ -27,6 +30,7 @@ const quadrantInfo = {
   "high-low": {
     title: "Comfortzone",
     subtitle: "Stabiel maar geen drive",
+    managerSubtitle: "Aanwezig maar niet inspirerend",
     emoji: "😐",
     bgClass: "bg-blue-100 dark:bg-blue-950",
     borderClass: "border-blue-500",
@@ -35,6 +39,7 @@ const quadrantInfo = {
   "high-high": {
     title: "Optimale Zone",
     subtitle: "Ideale combinatie",
+    managerSubtitle: "Motiverende, bewuste leider",
     emoji: "🌟",
     bgClass: "bg-emerald-100 dark:bg-emerald-950",
     borderClass: "border-emerald-500",
@@ -42,8 +47,11 @@ const quadrantInfo = {
   },
 };
 
-const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatrixProps) => {
+const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore, isManager = false }: HerzbergMatrixProps) => {
   const activeQuadrant = quadrantInfo[profile];
+
+  const hygieneLabel = isManager ? "Leiderschapseffect" : "Hygiëne";
+  const motivatorLabel = isManager ? "Motivatie-impact" : "Motivator";
 
   return (
     <div className="w-full max-w-lg mx-auto">
@@ -51,7 +59,7 @@ const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatri
       <div className="relative">
         {/* Y-axis label */}
         <div className="absolute -left-8 top-1/2 -translate-y-1/2 -rotate-90 text-sm font-medium text-muted-foreground whitespace-nowrap">
-          Motivatie →
+          {motivatorLabel} →
         </div>
         
         {/* Matrix Grid */}
@@ -62,6 +70,7 @@ const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatri
               profile="low-high"
               isActive={profile === "low-high"}
               info={quadrantInfo["low-high"]}
+              isManager={isManager}
             />
             
             {/* Top Right: High Hygiene, High Motivation */}
@@ -69,6 +78,7 @@ const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatri
               profile="high-high"
               isActive={profile === "high-high"}
               info={quadrantInfo["high-high"]}
+              isManager={isManager}
             />
             
             {/* Bottom Left: Low Hygiene, Low Motivation */}
@@ -76,6 +86,7 @@ const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatri
               profile="low-low"
               isActive={profile === "low-low"}
               info={quadrantInfo["low-low"]}
+              isManager={isManager}
             />
             
             {/* Bottom Right: High Hygiene, Low Motivation */}
@@ -83,12 +94,13 @@ const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatri
               profile="high-low"
               isActive={profile === "high-low"}
               info={quadrantInfo["high-low"]}
+              isManager={isManager}
             />
           </div>
           
           {/* X-axis label */}
           <div className="text-center mt-3 text-sm font-medium text-muted-foreground">
-            Hygiëne →
+            {hygieneLabel} →
           </div>
         </div>
       </div>
@@ -96,14 +108,14 @@ const HerzbergMatrix = ({ profile, hygieneScore, motivatorScore }: HerzbergMatri
       {/* Score Indicators */}
       <div className="mt-6 flex justify-center gap-8 text-sm">
         <div className="text-center">
-          <div className="text-muted-foreground mb-1">Hygiëne Score</div>
+          <div className="text-muted-foreground mb-1">{hygieneLabel} Score</div>
           <div className="text-2xl font-bold text-primary">{hygieneScore.toFixed(2)}</div>
           <div className="text-xs text-muted-foreground">
             {hygieneScore >= 3 ? "Hoog" : "Laag"}
           </div>
         </div>
         <div className="text-center">
-          <div className="text-muted-foreground mb-1">Motivator Score</div>
+          <div className="text-muted-foreground mb-1">{motivatorLabel} Score</div>
           <div className="text-2xl font-bold text-accent">{motivatorScore.toFixed(2)}</div>
           <div className="text-xs text-muted-foreground">
             {motivatorScore >= 3 ? "Hoog" : "Laag"}
@@ -118,9 +130,12 @@ interface QuadrantCellProps {
   profile: HerzbergProfile;
   isActive: boolean;
   info: typeof quadrantInfo[HerzbergProfile];
+  isManager?: boolean;
 }
 
-const QuadrantCell = ({ profile, isActive, info }: QuadrantCellProps) => {
+const QuadrantCell = ({ profile, isActive, info, isManager = false }: QuadrantCellProps) => {
+  const subtitle = isManager ? info.managerSubtitle : info.subtitle;
+  
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -140,7 +155,7 @@ const QuadrantCell = ({ profile, isActive, info }: QuadrantCellProps) => {
           {info.title}
         </h4>
         <p className={`text-xs mt-1 ${isActive ? 'text-foreground/70' : 'text-muted-foreground/70'}`}>
-          {info.subtitle}
+          {subtitle}
         </p>
       </div>
       
