@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { questions, categories, calculateHerzbergAnalysis, HerzbergProfile } from "./vibeQuestions";
+import { managerVibeQuestions, managerCategories } from "./managerVibeQuestions";
 
 export interface TeamSession {
   company: string;
@@ -7,17 +8,6 @@ export interface TeamSession {
   role: "employee" | "manager";
 }
 
-export interface ManagerExpectation {
-  id: string;
-  text: string;
-  mappedCategory: string;
-}
-
-export const managerQuestions: ManagerExpectation[] = [
-  { id: "m1", text: "Hoe schat je de motivatie van je team in?", mappedCategory: "Impact & Purpose" },
-  { id: "m2", text: "Hoe schat je de werkdruk van je team in?", mappedCategory: "Bold Leadership" },
-  { id: "m3", text: "Hoe schat je de samenwerking van je team in?", mappedCategory: "Voice & Autonomy" },
-];
 
 // Create a hash for company name (simple hash for anonymization)
 export function createCompanyHash(company: string): string {
@@ -154,18 +144,19 @@ function calculateManagerAverages(expectationsArray: Record<string, number>[]): 
   
   const totals: Record<string, { total: number; count: number }> = {};
   
-  managerQuestions.forEach((mq) => {
-    totals[mq.mappedCategory] = { total: 0, count: 0 };
+  Object.keys(managerCategories).forEach((cat) => {
+    totals[cat] = { total: 0, count: 0 };
   });
   
   expectationsArray.forEach((expectations) => {
     if (!expectations) return;
     
     Object.entries(expectations).forEach(([key, value]) => {
-      const mq = managerQuestions.find((q) => q.id === key);
+      const questionNum = parseInt(key.replace("mq", ""));
+      const mq = managerVibeQuestions.find((q) => q.id === questionNum);
       if (mq) {
-        totals[mq.mappedCategory].total += value;
-        totals[mq.mappedCategory].count += 1;
+        totals[mq.category].total += value;
+        totals[mq.category].count += 1;
       }
     });
   });

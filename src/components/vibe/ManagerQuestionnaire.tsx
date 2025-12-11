@@ -4,45 +4,44 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { questions, categories } from "@/lib/vibeQuestions";
+import { managerVibeQuestions, managerCategories } from "@/lib/managerVibeQuestions";
 import { TeamSession } from "@/lib/teamUtils";
-import type { QuestionnaireAnswers } from "@/pages/Index";
 
-interface TeamQuestionnaireProps {
+interface ManagerQuestionnaireProps {
   session: TeamSession;
-  onComplete: (answers: QuestionnaireAnswers) => void;
+  onComplete: (answers: Record<string, number>) => void;
 }
 
-const TeamQuestionnaire = ({ session, onComplete }: TeamQuestionnaireProps) => {
+const ManagerQuestionnaire = ({ session, onComplete }: ManagerQuestionnaireProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<QuestionnaireAnswers>({});
+  const [answers, setAnswers] = useState<Record<string, number>>({});
 
-  const totalQuestions = questions.length;
+  const totalQuestions = managerVibeQuestions.length;
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
   const getCurrentCategory = () => {
-    return questions[currentQuestion].category;
+    return managerVibeQuestions[currentQuestion].category;
   };
 
   const getCategoryColor = () => {
-    const category = questions[currentQuestion].category;
-    return categories[category as keyof typeof categories].color;
+    const category = managerVibeQuestions[currentQuestion].category;
+    return managerCategories[category as keyof typeof managerCategories]?.color || "#6366f1";
   };
 
   const getCurrentQuestionText = () => {
-    return questions[currentQuestion].text;
+    return managerVibeQuestions[currentQuestion].text;
   };
 
   const getAnswerKey = () => {
-    return `q${currentQuestion + 1}`;
+    return `mq${managerVibeQuestions[currentQuestion].id}`;
   };
 
   const getCurrentAnswer = () => {
-    return answers[`q${currentQuestion + 1}`];
+    return answers[getAnswerKey()];
   };
 
   const handleAnswer = (value: number) => {
-    setAnswers({ ...answers, [`q${currentQuestion + 1}`]: value });
+    setAnswers({ ...answers, [getAnswerKey()]: value });
   };
 
   const handleNext = () => {
@@ -68,6 +67,16 @@ const TeamQuestionnaire = ({ session, onComplete }: TeamQuestionnaireProps) => {
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-display font-bold text-primary mb-2">
+            Leidinggevende VIBE-Scan
+          </h1>
+          <p className="text-muted-foreground">
+            Reflecteer op je leiderschapsgedrag
+          </p>
+        </div>
+
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
@@ -82,12 +91,12 @@ const TeamQuestionnaire = ({ session, onComplete }: TeamQuestionnaireProps) => {
         </div>
 
         {/* Category Badge */}
-        <div className="mb-6">
-          <div 
+        <div className="mb-6 flex items-center gap-3">
+          <div
             className="inline-block px-4 py-2 rounded-full text-sm font-semibold"
-            style={{ 
+            style={{
               backgroundColor: `${getCategoryColor()}20`,
-              color: getCategoryColor() 
+              color: getCategoryColor(),
             }}
           >
             {getCurrentCategory()}
@@ -163,4 +172,4 @@ const TeamQuestionnaire = ({ session, onComplete }: TeamQuestionnaireProps) => {
   );
 };
 
-export default TeamQuestionnaire;
+export default ManagerQuestionnaire;

@@ -4,17 +4,20 @@ import { toast } from "sonner";
 import LandingPage from "@/components/vibe/LandingPage";
 import RegisterPage from "@/components/vibe/RegisterPage";
 import TeamQuestionnaire from "@/components/vibe/TeamQuestionnaire";
+import ManagerQuestionnaire from "@/components/vibe/ManagerQuestionnaire";
 import Results from "@/components/vibe/Results";
+import ManagerResults from "@/components/vibe/ManagerResults";
 import TeamDashboard from "@/components/vibe/TeamDashboard";
 import { TeamSession, submitResponse, clearTeamSession } from "@/lib/teamUtils";
 
 export type QuestionnaireAnswers = Record<string, number>;
 
-type ViewType = "landing" | "register" | "questionnaire" | "results" | "dashboard";
+type ViewType = "landing" | "register" | "questionnaire" | "manager-questionnaire" | "results" | "manager-results" | "dashboard";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<ViewType>("landing");
   const [answers, setAnswers] = useState<QuestionnaireAnswers>({});
+  const [managerAnswers, setManagerAnswers] = useState<Record<string, number>>({});
   const [session, setSession] = useState<TeamSession | null>(null);
 
   const handleStartRegistration = () => {
@@ -23,7 +26,12 @@ const Index = () => {
 
   const handleRegistrationComplete = (teamSession: TeamSession) => {
     setSession(teamSession);
-    setCurrentView("questionnaire");
+    // Route managers to their specific questionnaire
+    if (teamSession.role === "manager") {
+      setCurrentView("manager-questionnaire");
+    } else {
+      setCurrentView("questionnaire");
+    }
   };
 
   const handleCompleteQuestionnaire = async (
@@ -46,8 +54,26 @@ const Index = () => {
     setCurrentView("results");
   };
 
+  const handleCompleteManagerQuestionnaire = async (completedAnswers: Record<string, number>) => {
+    setManagerAnswers(completedAnswers);
+    
+    // Submit manager answers to database
+    if (session) {
+      try {
+        await submitResponse(session, {}, completedAnswers);
+        toast.success("Je antwoorden zijn opgeslagen!");
+      } catch (error) {
+        console.error("Error submitting response:", error);
+        toast.error("Er ging iets mis bij het opslaan. Je resultaten worden lokaal getoond.");
+      }
+    }
+    
+    setCurrentView("manager-results");
+  };
+
   const handleRestart = () => {
     setAnswers({});
+    setManagerAnswers({});
     setSession(null);
     clearTeamSession();
     setCurrentView("landing");
@@ -108,6 +134,21 @@ const Index = () => {
             />
           </motion.div>
         )}
+
+        {currentView === "manager-questionnaire" && session && (
+          <motion.div
+            key="manager-questionnaire"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ManagerQuestionnaire 
+              session={session}
+              onComplete={handleCompleteManagerQuestionnaire} 
+            />
+          </motion.div>
+        )}
         
         {currentView === "results" && (
           <motion.div
@@ -118,6 +159,18 @@ const Index = () => {
             transition={{ duration: 0.3 }}
           >
             <Results answers={answers} onRestart={handleRestart} />
+          </motion.div>
+        )}
+
+        {currentView === "manager-results" && (
+          <motion.div
+            key="manager-results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ManagerResults answers={managerAnswers} onRestart={handleRestart} />
           </motion.div>
         )}
 
