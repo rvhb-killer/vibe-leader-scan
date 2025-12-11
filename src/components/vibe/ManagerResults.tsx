@@ -1,13 +1,24 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { RotateCcw, BarChart3 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Download, RotateCcw, Info } from "lucide-react";
+import type { HerzbergProfile } from "@/lib/vibeQuestions";
 import { motion } from "framer-motion";
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+} from "recharts";
 import {
   managerCategories,
   calculateManagerCategoryScores,
   getManagerAdvice,
+  calculateManagerHerzbergAnalysis,
 } from "@/lib/managerVibeQuestions";
+import HerzbergMatrix from "./HerzbergMatrix";
+import jsPDF from "jspdf";
 
 interface ManagerResultsProps {
   answers: Record<string, number>;
@@ -16,127 +27,281 @@ interface ManagerResultsProps {
 
 const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
   const categoryScores = calculateManagerCategoryScores(answers);
+  const herzberg = calculateManagerHerzbergAnalysis(answers);
 
-  const getScoreColor = (score: number) => {
-    if (score >= 4) return "text-green-500";
-    if (score >= 3) return "text-amber-500";
-    return "text-red-500";
+  // Prepare chart data
+  const chartData = Object.keys(managerCategories).map((cat) => ({
+    category: managerCategories[cat as keyof typeof managerCategories].short,
+    score: categoryScores[cat] || 0,
+    fullMark: 5,
+  }));
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(20);
+    doc.text("VIBE Leiderschaps Rapport", 20, 20);
+
+    doc.setFontSize(12);
+    let yPos = 40;
+
+    // VIBE Scores
+    doc.setFont(undefined, "bold");
+    doc.text("VIBE Scores", 20, yPos);
+    yPos += 10;
+
+    Object.keys(managerCategories).forEach((cat) => {
+      const score = categoryScores[cat]?.toFixed(2) || "0.00";
+      const interpretation = getInterpretation(categoryScores[cat] || 0);
+      const advice = getManagerAdvice(cat, categoryScores[cat] || 0);
+
+      doc.setFont(undefined, "bold");
+      doc.text(`${cat}: ${score}/5 (${interpretation})`, 20, yPos);
+      yPos += 7;
+
+      doc.setFont(undefined, "normal");
+      const splitAdvice = doc.splitTextToSize(advice, 170);
+      doc.text(splitAdvice, 20, yPos);
+      yPos += splitAdvice.length * 7 + 5;
+
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+    });
+
+    // Herzberg Analysis
+    yPos += 10;
+    if (yPos > 230) {
+      doc.addPage();
+      yPos = 20;
+    }
+
+    doc.setFont(undefined, "bold");
+    doc.text("Herzberg Leiderschaps-Analyse", 20, yPos);
+    yPos += 10;
+
+    doc.setFont(undefined, "normal");
+    doc.text(`Leiderschapseffect Score: ${herzberg.hygieneScore.toFixed(2)}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Motivatie-impact Score: ${herzberg.motivatorScore.toFixed(2)}`, 20, yPos);
+    yPos += 7;
+    doc.text(`Profiel: ${getProfileLabel(herzberg.profile)}`, 20, yPos);
+    yPos += 10;
+
+    doc.setFont(undefined, "bold");
+    doc.text("Analyse:", 20, yPos);
+    yPos += 7;
+    doc.setFont(undefined, "normal");
+    doc.text(`${herzberg.adviceDetail.title}`, 20, yPos);
+    yPos += 6;
+    doc.text(`${herzberg.adviceDetail.subtitle}`, 20, yPos);
+    yPos += 10;
+
+    doc.text("Interpretatie:", 20, yPos);
+    yPos += 6;
+    herzberg.adviceDetail.interpretation.forEach((item) => {
+      const split = doc.splitTextToSize(`• ${item}`, 170);
+      doc.text(split, 25, yPos);
+      yPos += split.length * 5;
+    });
+    yPos += 4;
+
+    doc.text("Concrete stappen:", 20, yPos);
+    yPos += 6;
+    herzberg.adviceDetail.steps.forEach((item) => {
+      const split = doc.splitTextToSize(`• ${item}`, 170);
+      doc.text(split, 25, yPos);
+      yPos += split.length * 5;
+    });
+
+    doc.save("VIBE_Leiderschaps_Rapport.pdf");
   };
-
-  const getProgressColor = (score: number) => {
-    if (score >= 4) return "bg-green-500";
-    if (score >= 3) return "bg-amber-500";
-    return "bg-red-500";
-  };
-
-  const overallScore =
-    Object.values(categoryScores).reduce((a, b) => a + b, 0) /
-    Object.values(categoryScores).length;
 
   return (
     <div className="min-h-screen py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          {/* Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-4">
-              <BarChart3 className="w-8 h-8 text-accent" />
-            </div>
-            <h1 className="text-4xl font-display font-bold text-primary mb-4">
-              Jouw Leiderschaps VIBE-Score
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 text-primary">
+              🎉 Jouw Leiderschaps VIBE Resultaten
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Hieronder vind je een overzicht van je zelfevaluatie op de vier VIBE-dimensies.
+            <p className="text-lg text-muted-foreground">
+              Ontdek je leiderschapsprofiel én motivatie-impact
             </p>
           </div>
 
-          {/* Overall Score */}
-          <Card className="p-8 mb-8 text-center bg-gradient-to-br from-accent/10 to-primary/10">
-            <h2 className="text-2xl font-semibold mb-2">Totaalscore</h2>
-            <div className={`text-6xl font-bold ${getScoreColor(overallScore)}`}>
-              {overallScore.toFixed(1)}
-            </div>
-            <p className="text-muted-foreground mt-2">van 5.0</p>
+          {/* VIBE Radar Chart */}
+          <Card className="p-8 shadow-lg mb-8">
+            <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
+              Jouw Leiderschapsprofiel
+            </h2>
+            <ResponsiveContainer width="100%" height={400}>
+              <RadarChart data={chartData}>
+                <PolarGrid stroke="hsl(var(--border))" />
+                <PolarAngleAxis
+                  dataKey="category"
+                  tick={{ fill: "hsl(var(--foreground))", fontSize: 14, fontWeight: 600 }}
+                />
+                <PolarRadiusAxis angle={90} domain={[0, 5]} />
+                <Radar
+                  name="Score"
+                  dataKey="score"
+                  stroke="hsl(var(--accent))"
+                  fill="hsl(var(--accent))"
+                  fillOpacity={0.3}
+                  strokeWidth={2}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
           </Card>
 
-          {/* Category Scores */}
-          <div className="grid gap-6 mb-8">
-            {Object.entries(managerCategories).map(([category, info], index) => {
-              const score = categoryScores[category] || 0;
-              const advice = getManagerAdvice(category, score);
+          {/* Herzberg Analysis */}
+          <Card className="p-8 shadow-lg mb-8 border-2 border-accent/20">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <h2 className="text-2xl font-display font-semibold text-center text-primary">
+                Herzberg Leiderschaps-Analyse
+              </h2>
+              <div className="group relative">
+                <Info className="h-5 w-5 text-muted-foreground cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-3 bg-popover border rounded-lg shadow-lg text-sm z-10">
+                  <p className="text-popover-foreground">
+                    <strong>Herzberg voor Leiders:</strong> Analyseert je leiderschapseffect
+                    (structuur, richting) versus je motivatie-impact (inspiratie, erkenning).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <HerzbergMatrix
+              profile={herzberg.profile as HerzbergProfile}
+              hygieneScore={herzberg.hygieneScore}
+              motivatorScore={herzberg.motivatorScore}
+              isManager={true}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8 bg-muted/50 p-6 rounded-lg space-y-6"
+            >
+              <div>
+                <h3 className="text-lg font-semibold text-primary mb-1">
+                  {herzberg.adviceDetail.title}
+                </h3>
+                <p className="text-accent font-medium">{herzberg.adviceDetail.subtitle}</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">📋 Interpretatie</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.interpretation.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">💡 Wat dit betekent</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.meaning.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">🎯 Prioriteiten</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.priorities.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="text-sm font-semibold text-primary mb-2">✅ Concrete stappen</p>
+                <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                  {herzberg.adviceDetail.steps.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          </Card>
+
+          {/* Detailed VIBE Results */}
+          <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
+            Gedetailleerde VIBE Scores
+          </h2>
+
+          <div className="space-y-6 mb-8">
+            {Object.keys(managerCategories).map((cat, index) => {
+              const score = categoryScores[cat] || 0;
+              const interpretation = getInterpretation(score);
+              const advice = getManagerAdvice(cat, score);
+              const categoryInfo = managerCategories[cat as keyof typeof managerCategories];
 
               return (
                 <motion.div
-                  key={category}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  key={cat}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
-                  <Card className="p-6">
+                  <Card
+                    className="p-6 shadow-md border-l-4"
+                    style={{ borderLeftColor: categoryInfo.color }}
+                  >
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: info.color }}
-                        />
-                        <h3 className="text-xl font-semibold">{category}</h3>
-                      </div>
-                      <div className={`text-2xl font-bold ${getScoreColor(score)}`}>
-                        {score.toFixed(1)}
+                      <h3 className="text-xl font-display font-semibold text-primary">{cat}</h3>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold" style={{ color: categoryInfo.color }}>
+                          {score.toFixed(2)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">/ 5.00</div>
                       </div>
                     </div>
 
-                    <div className="mb-4">
-                      <Progress
-                        value={(score / 5) * 100}
-                        className="h-3"
-                        style={
-                          {
-                            "--progress-background": getProgressColor(score),
-                          } as React.CSSProperties
-                        }
-                      />
+                    <div className="mb-3">
+                      <span
+                        className="inline-block px-3 py-1 rounded-full text-sm font-medium"
+                        style={{
+                          backgroundColor: `${categoryInfo.color}20`,
+                          color: categoryInfo.color,
+                        }}
+                      >
+                        {interpretation}
+                      </span>
                     </div>
 
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {advice}
-                    </p>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-sm font-medium mb-2 text-primary">💡 Advies:</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{advice}</p>
+                    </div>
                   </Card>
                 </motion.div>
               );
             })}
           </div>
 
-          {/* Tips Section */}
-          <Card className="p-8 mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Algemene Tips</h2>
-            <ul className="space-y-3 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-accent">•</span>
-                Bespreek deze resultaten met je team en vraag om hun perspectief.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent">•</span>
-                Focus op één of twee categorieën waar je de meeste groei wilt realiseren.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent">•</span>
-                Plan regelmatige momenten voor zelfreflectie op je leiderschapsgedrag.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-accent">•</span>
-                Vergelijk je eigen scores met de teamresultaten voor waardevolle inzichten.
-              </li>
-            </ul>
-          </Card>
-
           {/* Actions */}
-          <div className="flex justify-center">
-            <Button onClick={onRestart} size="lg" variant="outline" className="px-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button onClick={handleDownloadPDF} size="lg" variant="outline" className="px-8">
+              <Download className="mr-2 h-5 w-5" />
+              Download als PDF
+            </Button>
+
+            <Button
+              onClick={onRestart}
+              size="lg"
+              className="gradient-accent hover:opacity-90 transition-opacity px-8"
+            >
               <RotateCcw className="mr-2 h-5 w-5" />
               Opnieuw beginnen
             </Button>
@@ -146,5 +311,22 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
     </div>
   );
 };
+
+// Helper functions
+function getInterpretation(score: number): string {
+  if (score < 2.5) return "Laag - Directe aandacht nodig";
+  if (score < 3.5) return "Gemiddeld - Ruimte voor verbetering";
+  return "Sterk - Goed bezig!";
+}
+
+function getProfileLabel(profile: string): string {
+  const labels: Record<string, string> = {
+    "low-low": "Kritiek Gebied",
+    "low-high": "Goede intenties, beperkte grip",
+    "high-low": "Aanwezig maar niet inspirerend",
+    "high-high": "Optimale Leider",
+  };
+  return labels[profile] || profile;
+}
 
 export default ManagerResults;
