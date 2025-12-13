@@ -8,11 +8,11 @@ export const categories = {
     color: "#10b981",
   },
   "Bold Leadership": {
-    short: "Leadership",
+    short: "Bold Leadership",
     color: "#f59e0b",
   },
   "Recognition & Reward": {
-    short: "Recognition",
+    short: "Empathy & Recognition",
     color: "#ef4444",
   },
   "Reflectie": {

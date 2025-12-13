@@ -8,7 +8,8 @@ import {
   PolarGrid, 
   PolarAngleAxis, 
   PolarRadiusAxis, 
-  ResponsiveContainer 
+  ResponsiveContainer,
+  Tooltip 
 } from "recharts";
 import { categories, getAdvice, calculateHerzbergAnalysis, questions } from "@/lib/vibeQuestions";
 import type { QuestionnaireAnswers } from "@/pages/Index";
@@ -178,6 +179,20 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
                   fill="hsl(var(--accent))" 
                   fillOpacity={0.3}
                   strokeWidth={2}
+                />
+                <Tooltip 
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+                          <p className="font-semibold text-popover-foreground">{data.category}</p>
+                          <p className="text-accent font-bold text-lg">{data.score.toFixed(2)} / 5</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
                 />
               </RadarChart>
             </ResponsiveContainer>
