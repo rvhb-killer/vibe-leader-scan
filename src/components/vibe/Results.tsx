@@ -15,6 +15,7 @@ import { categories, getAdvice, calculateHerzbergAnalysis, questions } from "@/l
 import type { QuestionnaireAnswers } from "@/pages/Index";
 import jsPDF from "jspdf";
 import HerzbergMatrix from "./HerzbergMatrix";
+import VibeHighlight from "./VibeHighlight";
 
 interface ResultsProps {
   answers: QuestionnaireAnswers;
@@ -292,7 +293,7 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
                   <Card className="p-6 shadow-md border-l-4" style={{ borderLeftColor: categoryInfo.color }}>
                     <div className="flex items-start justify-between mb-4">
                       <h3 className="text-xl font-display font-semibold text-primary">
-                        {cat}
+                        <VibeHighlight text={cat} />
                       </h3>
                       <div className="text-right">
                         <div className="text-3xl font-bold" style={{ color: categoryInfo.color }}>
