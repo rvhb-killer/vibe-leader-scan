@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Target, Sparkles, Heart, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
+import VibeHighlight from "./VibeHighlight";
 
 interface LandingPageProps {
   onStart: () => void;
@@ -88,7 +89,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-display font-semibold mb-2 text-primary">
-                      Voice & Autonomy
+                      <VibeHighlight text="Voice & Autonomy" />
                     </h3>
                     <p className="text-muted-foreground">
                       Geef medewerkers inspraak en vertrouwen. Autonomie verhoogt eigenaarschap, creativiteit en motivatie.
@@ -104,7 +105,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-display font-semibold mb-2 text-primary">
-                      Impact & Purpose
+                      <VibeHighlight text="Impact & Purpose" />
                     </h3>
                     <p className="text-muted-foreground">
                       Laat mensen voelen dat hun werk ertoe doet. Verbind dagelijkse taken aan betekenisvolle doelen.
@@ -120,7 +121,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-display font-semibold mb-2 text-primary">
-                      Bold Leadership
+                      <VibeHighlight text="Bold Leadership" />
                     </h3>
                     <p className="text-muted-foreground">
                       Leiderschap dat duidelijk, ondersteunend en aanwezig is. Geen micromanagement, wél richting en coaching.
@@ -136,7 +137,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-display font-semibold mb-2 text-primary">
-                      Empathy & Recognition
+                      <VibeHighlight text="Empathy & Recognition" />
                     </h3>
                     <p className="text-muted-foreground">
                       Toon oprechte waardering en menselijkheid. Erken inzet en geef ruimte voor welzijn.
