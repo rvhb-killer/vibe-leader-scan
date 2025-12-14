@@ -16,6 +16,7 @@ import type { QuestionnaireAnswers } from "@/pages/Index";
 import jsPDF from "jspdf";
 import HerzbergMatrix from "./HerzbergMatrix";
 import VibeHighlight from "./VibeHighlight";
+import SDTAnalysis from "./SDTAnalysis";
 
 interface ResultsProps {
   answers: QuestionnaireAnswers;
@@ -50,6 +51,14 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
 
   // Calculate Herzberg analysis
   const herzberg = calculateHerzbergAnalysis(answers);
+
+  // Calculate SDT scores based on VIBE mapping
+  // Autonomie = Voice & Autonomy
+  // Competentie = (Impact & Purpose + Bold Leadership) / 2
+  // Verbondenheid = Empathy & Recognition
+  const autonomyScore = averages["Voice & Autonomy"] || 0;
+  const competenceScore = ((averages["Impact & Purpose"] || 0) + (averages["Bold Leadership"] || 0)) / 2;
+  const relatednessScore = averages["Empathy & Recognition"] || 0;
 
   // Prepare chart data
   const chartData = Object.keys(categories).map(cat => ({
@@ -269,6 +278,13 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
               </div>
             </motion.div>
           </Card>
+
+          {/* SDT Analysis */}
+          <SDTAnalysis 
+            autonomyScore={autonomyScore}
+            competenceScore={competenceScore}
+            relatednessScore={relatednessScore}
+          />
 
           {/* Detailed VIBE Results */}
           <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
