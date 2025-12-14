@@ -171,7 +171,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
             <div className="space-y-6">
               <Card className="p-8 shadow-md">
                 <h3 className="text-2xl font-display font-semibold mb-3 text-primary">
-                  📊 Meetbaar & Wetenschappelijk Onderbouwd
+                  Meetbaar & Wetenschappelijk Onderbouwd
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Grootschalige meta-analyses tonen aan dat autonomie, zingeving, ondersteunend leiderschap en erkenning direct correleren met hogere motivatie, betere prestaties, verminderde burn-out en hogere retentie.
@@ -180,7 +180,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
 
               <Card className="p-8 shadow-md">
                 <h3 className="text-2xl font-display font-semibold mb-3 text-primary">
-                  🎯 Directe Actiepunten
+                  Directe Actiepunten
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
                   De VIBE-scan geeft je niet alleen scores, maar ook concrete, toepasbare adviezen per thema. Geen vaag giswerk — maar heldere stappen die je vandaag nog kunt nemen om je leiderschap te verbeteren.
@@ -189,7 +189,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
 
               <Card className="p-8 shadow-md">
                 <h3 className="text-2xl font-display font-semibold mb-3 text-primary">
-                  ⚡ Snel & Effectief
+                  Snel & Effectief
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
                   In slechts 5 minuten krijg je een visueel overzicht van je leiderschapsstijl en ontdek je waar de grootste kansen liggen. Perfect voor drukke leiders die wél impact willen maken.
