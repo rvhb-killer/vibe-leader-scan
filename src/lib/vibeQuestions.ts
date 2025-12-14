@@ -11,8 +11,8 @@ export const categories = {
     short: "Bold Leadership",
     color: "#f59e0b",
   },
-  "Recognition & Reward": {
-    short: "Empathy & Recognition",
+  "Empathy & Recognition": {
+    short: "Empathy",
     color: "#ef4444",
   },
   "Reflectie": {
@@ -58,14 +58,14 @@ export const questions: Question[] = [
   { id: 20, text: "Mijn manager helpt mij groeien, niet enkel presteren.", category: "Bold Leadership", herzberg: "motivator" },
   { id: 21, text: "Problemen of conflicten worden snel en eerlijk aangepakt.", category: "Bold Leadership", herzberg: "hygiene" },
   
-  // Recognition & Reward (22-28) - Mix of motivator and hygiene
-  { id: 22, text: "Ik krijg waardering los van formele beloningen.", category: "Recognition & Reward", herzberg: "motivator" },
-  { id: 23, text: "Successen worden gevierd, individueel of in team.", category: "Recognition & Reward", herzberg: "motivator" },
-  { id: 24, text: "Ik ontvang voldoende positieve feedback.", category: "Recognition & Reward", herzberg: "motivator" },
-  { id: 25, text: "Ik voel me eerlijk beloond voor mijn werk.", category: "Recognition & Reward", herzberg: "hygiene" },
-  { id: 26, text: "Beloningen zijn transparant en eerlijk geregeld.", category: "Recognition & Reward", herzberg: "hygiene" },
-  { id: 27, text: "Doorgroeimogelijkheden zijn duidelijk voor iedereen.", category: "Recognition & Reward", herzberg: "hygiene" },
-  { id: 28, text: "Ik krijg waardering op een manier die bij mij past.", category: "Recognition & Reward", herzberg: "motivator" },
+  // Empathy & Recognition (22-28) - Mix of motivator and hygiene
+  { id: 22, text: "Ik krijg waardering los van formele beloningen.", category: "Empathy & Recognition", herzberg: "motivator" },
+  { id: 23, text: "Successen worden gevierd, individueel of in team.", category: "Empathy & Recognition", herzberg: "motivator" },
+  { id: 24, text: "Ik ontvang voldoende positieve feedback.", category: "Empathy & Recognition", herzberg: "motivator" },
+  { id: 25, text: "Ik voel me eerlijk beloond voor mijn werk.", category: "Empathy & Recognition", herzberg: "hygiene" },
+  { id: 26, text: "Beloningen zijn transparant en eerlijk geregeld.", category: "Empathy & Recognition", herzberg: "hygiene" },
+  { id: 27, text: "Doorgroeimogelijkheden zijn duidelijk voor iedereen.", category: "Empathy & Recognition", herzberg: "hygiene" },
+  { id: 28, text: "Ik krijg waardering op een manier die bij mij past.", category: "Empathy & Recognition", herzberg: "motivator" },
   
   // Reflectie (29)
   { id: 29, text: "Ik zou opnieuw voor deze organisatie kiezen.", category: "Reflectie", herzberg: "motivator" },
@@ -88,7 +88,7 @@ export function getAdvice(category: string, score: number): string {
       medium: "Je ervaart steun, maar niet consequent. Vraag regelmaat in feedback. Zoek duidelijkheid wanneer iets onduidelijk voelt. Benoem wanneer coaching je helpt en waar je meer begeleiding wil.",
       high: "Je voelt je gesteund en gehoord. Blijf dit onderhouden door open te communiceren. Vraag om coaching wanneer je wil groeien en geef aan wat goed werkt in jullie samenwerking.",
     },
-    "Recognition & Reward": {
+    "Empathy & Recognition": {
       low: "Je voelt je weinig erkend. Benoem welke vormen van waardering jou motiveren. Vraag om feedback op je werk. Maak doorgroeikansen en verwachtingen bespreekbaar.",
       medium: "Je ervaart erkenning, maar niet altijd op de juiste manier. Geef aan hoe jij waardering graag ontvangt. Vraag om specifieke feedback. Verken hoe beloning en groei voor jou kunnen passen.",
       high: "Je voelt je gewaardeerd en eerlijk behandeld. Houd dit levend door actief feedback te vragen en je successen te delen. Geef ook aan welke vormen van erkenning voor jou het best werken.",
