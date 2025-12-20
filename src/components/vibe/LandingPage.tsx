@@ -183,7 +183,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   Directe Actiepunten
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  De VIBE-scan geeft je niet alleen scores, maar ook concrete, toepasbare adviezen per thema. Geen vaag giswerk, maar heldere stappen die je vandaag nog kunt nemen om je leiderschap te verbeteren.
+                  De VIBE-scan geeft je niet alleen scores, maar ook concrete, toepasbare adviezen per thema. Geen vage hypothese, maar heldere stappen die je vandaag nog kunt nemen om je leiderschap te verbeteren.
                 </p>
               </Card>
 
