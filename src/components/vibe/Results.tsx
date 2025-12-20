@@ -67,82 +67,446 @@ const Results = ({ answers, onRestart }: ResultsProps) => {
     fullMark: 5,
   }));
 
+  // SDT needs for PDF
+  const sdtNeeds = [
+    {
+      name: "Autonomie",
+      score: autonomyScore,
+      color: "#10B981",
+      description: "Je behoefte aan keuzevrijheid, zelfbeschikking en eigenaarschap over je werk."
+    },
+    {
+      name: "Competentie",
+      score: competenceScore,
+      color: "#F59E0B",
+      description: "Je behoefte om effectief te zijn, te groeien en impact te maken met je vaardigheden."
+    },
+    {
+      name: "Verbondenheid",
+      score: relatednessScore,
+      color: "#8B5CF6",
+      description: "Je behoefte aan betekenisvolle relaties, erbij horen en je gewaardeerd voelen."
+    }
+  ];
+
+  const getSDTLevel = (score: number): "low" | "medium" | "high" => {
+    if (score < 2.5) return "low";
+    if (score < 3.5) return "medium";
+    return "high";
+  };
+
+  const getSDTLevelLabel = (level: "low" | "medium" | "high"): string => {
+    return {
+      low: "Vraagt aandacht",
+      medium: "In ontwikkeling",
+      high: "Goed vervuld"
+    }[level];
+  };
+
+  const getSDTMotivationProfile = () => {
+    const overallScore = (autonomyScore + competenceScore + relatednessScore) / 3;
+    if (overallScore >= 3.5) {
+      return {
+        title: "Intrinsiek Gemotiveerd",
+        description: "Je basale psychologische behoeften zijn goed vervuld. Je ervaart veel innerlijke motivatie en bevlogenheid.",
+        advice: "Focus op het behouden van deze positieve staat en help anderen om ook te groeien."
+      };
+    } else if (overallScore >= 2.5) {
+      return {
+        title: "Groeiende Motivatie",
+        description: "Er is een solide basis, maar er liggen kansen om je motivatie te versterken.",
+        advice: "Richt je vooral op je zwakste behoefte om een beter evenwicht te creëren."
+      };
+    } else {
+      return {
+        title: "Motivatie onder Druk",
+        description: "Meerdere basisbehoeften vragen aandacht. Dit kan leiden tot verminderde energie en betrokkenheid.",
+        advice: "Bespreek dit met je leidinggevende en kies één concrete actie om mee te starten."
+      };
+    }
+  };
+
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    
-    doc.setFontSize(20);
-    doc.text("VIBE Leiderschap Rapport", 20, 20);
-    
-    doc.setFontSize(12);
-    let yPos = 40;
-    
-    // VIBE Scores
-    doc.setFont(undefined, 'bold');
-    doc.text("VIBE Scores", 20, yPos);
-    yPos += 10;
-    
-    Object.keys(categories).forEach(cat => {
-      const avg = averages[cat]?.toFixed(2) || "0.00";
-      const interpretation = getInterpretation(averages[cat] || 0);
-      const advice = getAdvice(cat, averages[cat] || 0);
-      
-      doc.setFont(undefined, 'bold');
-      doc.text(`${cat}: ${avg}/5 (${interpretation})`, 20, yPos);
-      yPos += 7;
-      
-      doc.setFont(undefined, 'normal');
-      const splitAdvice = doc.splitTextToSize(advice, 170);
-      doc.text(splitAdvice, 20, yPos);
-      yPos += (splitAdvice.length * 7) + 5;
-      
-      if (yPos > 250) {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const contentWidth = pageWidth - (margin * 2);
+    let yPos = margin;
+
+    // Helper function to check page break
+    const checkPageBreak = (neededHeight: number) => {
+      if (yPos + neededHeight > pageHeight - margin) {
         doc.addPage();
-        yPos = 20;
+        yPos = margin;
+        return true;
       }
+      return false;
+    };
+
+    // Helper to draw a colored card background
+    const drawCard = (x: number, y: number, width: number, height: number, borderColor?: string) => {
+      doc.setFillColor(248, 250, 252); // Light gray background
+      doc.setDrawColor(borderColor ? borderColor : '#e2e8f0');
+      doc.roundedRect(x, y, width, height, 3, 3, 'FD');
+    };
+
+    // Helper to draw section header
+    const drawSectionHeader = (title: string, emoji?: string) => {
+      checkPageBreak(20);
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 41, 59); // slate-800
+      const displayTitle = emoji ? `${emoji} ${title}` : title;
+      doc.text(displayTitle, pageWidth / 2, yPos, { align: 'center' });
+      yPos += 12;
+    };
+
+    // ==================== HEADER ====================
+    doc.setFillColor(59, 130, 246); // Blue header
+    doc.rect(0, 0, pageWidth, 45, 'F');
+    
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text("VIBE Leiderschap Rapport", pageWidth / 2, 25, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Gegenereerd op ${new Date().toLocaleDateString('nl-NL')}`, pageWidth / 2, 37, { align: 'center' });
+    
+    yPos = 55;
+
+    // ==================== INTRO TEXT ====================
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139); // slate-500
+    const introText = "Je beantwoordde 29 stellingen over hoe jij jouw werkcontext en motivatie beleeft. Op basis daarvan krijg je een score per bouwsteen van het VIBE-model, gekoppeld aan de Herzberg Motivatie-Analyse.";
+    const splitIntro = doc.splitTextToSize(introText, contentWidth);
+    doc.text(splitIntro, margin, yPos);
+    yPos += splitIntro.length * 5 + 10;
+
+    // ==================== VIBE SCORES SECTION ====================
+    drawSectionHeader("Gedetailleerde VIBE Scores");
+    
+    Object.keys(categories).forEach((cat) => {
+      const avg = averages[cat] || 0;
+      const interpretation = getInterpretation(avg);
+      const advice = getAdvice(cat, avg);
+      const categoryInfo = categories[cat as keyof typeof categories];
+      
+      // Calculate card height
+      const adviceLines = doc.splitTextToSize(advice, contentWidth - 30);
+      const cardHeight = 45 + (adviceLines.length * 4);
+      
+      checkPageBreak(cardHeight + 10);
+      
+      // Draw card with colored left border
+      drawCard(margin, yPos, contentWidth, cardHeight, categoryInfo.color);
+      
+      // Colored left border
+      doc.setFillColor(categoryInfo.color);
+      doc.rect(margin, yPos, 4, cardHeight, 'F');
+      
+      // Category name
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 41, 59);
+      doc.text(cat, margin + 10, yPos + 10);
+      
+      // Score
+      doc.setFontSize(18);
+      doc.setTextColor(categoryInfo.color);
+      doc.text(avg.toFixed(2), pageWidth - margin - 15, yPos + 12, { align: 'right' });
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      doc.text("/ 5.00", pageWidth - margin - 5, yPos + 12, { align: 'right' });
+      
+      // Interpretation badge
+      doc.setFontSize(9);
+      doc.setTextColor(categoryInfo.color);
+      doc.text(interpretation, margin + 10, yPos + 20);
+      
+      // Advice
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 41, 59);
+      doc.text("Advies:", margin + 10, yPos + 30);
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(71, 85, 105);
+      doc.text(adviceLines, margin + 10, yPos + 36);
+      
+      yPos += cardHeight + 8;
     });
 
-    // Herzberg Analysis
-    yPos += 10;
-    if (yPos > 230) {
-      doc.addPage();
-      yPos = 20;
-    }
+    // ==================== HERZBERG SECTION ====================
+    checkPageBreak(100);
+    yPos += 5;
+    drawSectionHeader("Herzberg Motivatie-Analyse");
     
-    doc.setFont(undefined, 'bold');
-    doc.text("Herzberg Motivatie-Analyse", 20, yPos);
+    // Herzberg explanation
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100, 116, 139);
+    const herzbergExplain = "Herzberg's Two-Factor Theory: Onderscheidt hygiënefactoren (voorkomen ontevredenheid) van motivatoren (stimuleren tevredenheid).";
+    doc.text(herzbergExplain, pageWidth / 2, yPos, { align: 'center' });
     yPos += 10;
+
+    // Scores card
+    const herzbergCardHeight = 30;
+    drawCard(margin, yPos, contentWidth, herzbergCardHeight);
     
-    doc.setFont(undefined, 'normal');
-    doc.text(`Hygiëne Score: ${herzberg.hygieneScore.toFixed(2)}`, 20, yPos);
-    yPos += 7;
-    doc.text(`Motivator Score: ${herzberg.motivatorScore.toFixed(2)}`, 20, yPos);
-    yPos += 7;
-    doc.text(`Profiel: ${getProfileLabel(herzberg.profile)}`, 20, yPos);
-    yPos += 10;
+    // Hygiene score
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text("Hygiëne Score", margin + 30, yPos + 10, { align: 'center' });
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text(herzberg.hygieneScore.toFixed(2), margin + 30, yPos + 22, { align: 'center' });
     
-    doc.setFont(undefined, 'bold');
-    doc.text("Herzberg Analyse:", 20, yPos);
-    yPos += 7;
-    doc.setFont(undefined, 'normal');
-    doc.text(`${herzberg.adviceDetail.title} - ${herzberg.adviceDetail.subtitle}`, 20, yPos);
-    yPos += 10;
+    // Motivator score
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text("Motivator Score", pageWidth - margin - 30, yPos + 10, { align: 'center' });
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(239, 68, 68); // accent color
+    doc.text(herzberg.motivatorScore.toFixed(2), pageWidth - margin - 30, yPos + 22, { align: 'center' });
     
-    doc.text("Interpretatie:", 20, yPos);
+    // Profile
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text("Profiel", pageWidth / 2, yPos + 10, { align: 'center' });
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(59, 130, 246);
+    doc.text(getProfileLabel(herzberg.profile), pageWidth / 2, yPos + 22, { align: 'center' });
+    
+    yPos += herzbergCardHeight + 10;
+
+    // Herzberg advice detail
+    checkPageBreak(80);
+    
+    // Title and subtitle
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text(herzberg.adviceDetail.title, margin, yPos);
     yPos += 6;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(239, 68, 68);
+    doc.text(herzberg.adviceDetail.subtitle, margin, yPos);
+    yPos += 10;
+
+    // Interpretation
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text("Interpretatie", margin, yPos);
+    yPos += 6;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
     herzberg.adviceDetail.interpretation.forEach(item => {
-      const split = doc.splitTextToSize(`• ${item}`, 170);
-      doc.text(split, 25, yPos);
-      yPos += split.length * 5;
+      checkPageBreak(10);
+      const lines = doc.splitTextToSize(`• ${item}`, contentWidth - 5);
+      doc.text(lines, margin + 5, yPos);
+      yPos += lines.length * 4 + 2;
     });
     yPos += 4;
-    
-    doc.text("Concrete stappen:", 20, yPos);
+
+    // Meaning
+    checkPageBreak(20);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text("Wat dit betekent", margin, yPos);
     yPos += 6;
-    herzberg.adviceDetail.steps.forEach(item => {
-      const split = doc.splitTextToSize(`• ${item}`, 170);
-      doc.text(split, 25, yPos);
-      yPos += split.length * 5;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    herzberg.adviceDetail.meaning.forEach(item => {
+      checkPageBreak(10);
+      const lines = doc.splitTextToSize(`• ${item}`, contentWidth - 5);
+      doc.text(lines, margin + 5, yPos);
+      yPos += lines.length * 4 + 2;
     });
+    yPos += 4;
+
+    // Priorities
+    checkPageBreak(20);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text("Prioriteiten", margin, yPos);
+    yPos += 6;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    herzberg.adviceDetail.priorities.forEach(item => {
+      checkPageBreak(10);
+      const lines = doc.splitTextToSize(`• ${item}`, contentWidth - 5);
+      doc.text(lines, margin + 5, yPos);
+      yPos += lines.length * 4 + 2;
+    });
+    yPos += 4;
+
+    // Steps
+    checkPageBreak(20);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text("Concrete stappen", margin, yPos);
+    yPos += 6;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    herzberg.adviceDetail.steps.forEach(item => {
+      checkPageBreak(10);
+      const lines = doc.splitTextToSize(`• ${item}`, contentWidth - 5);
+      doc.text(lines, margin + 5, yPos);
+      yPos += lines.length * 4 + 2;
+    });
+
+    // ==================== SDT SECTION ====================
+    doc.addPage();
+    yPos = margin;
+    
+    drawSectionHeader("Self-Determination Theory Analyse");
+    
+    // SDT explanation
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    const sdtExplain = "Volgens de Self-Determination Theory (Deci & Ryan) zijn er drie universele psychologische basisbehoeften die essentieel zijn voor welzijn en intrinsieke motivatie.";
+    const splitSDT = doc.splitTextToSize(sdtExplain, contentWidth);
+    doc.text(splitSDT, pageWidth / 2, yPos, { align: 'center' });
+    yPos += splitSDT.length * 4 + 10;
+
+    // Three SDT cards
+    const sdtCardWidth = (contentWidth - 10) / 3;
+    const sdtCardHeight = 60;
+    
+    sdtNeeds.forEach((need, index) => {
+      const cardX = margin + (index * (sdtCardWidth + 5));
+      const level = getSDTLevel(need.score);
+      
+      // Card background
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(need.color);
+      doc.setLineWidth(1);
+      doc.roundedRect(cardX, yPos, sdtCardWidth, sdtCardHeight, 2, 2, 'FD');
+      
+      // Name
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 41, 59);
+      doc.text(need.name, cardX + sdtCardWidth / 2, yPos + 12, { align: 'center' });
+      
+      // Score
+      doc.setFontSize(20);
+      doc.setTextColor(need.color);
+      doc.text(need.score.toFixed(1), cardX + sdtCardWidth / 2, yPos + 32, { align: 'center' });
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139);
+      doc.text("/ 5.0", cardX + sdtCardWidth / 2 + 12, yPos + 32, { align: 'left' });
+      
+      // Level
+      doc.setFontSize(8);
+      doc.setTextColor(need.color);
+      doc.text(getSDTLevelLabel(level), cardX + sdtCardWidth / 2, yPos + 45, { align: 'center' });
+      
+      // Description (truncated)
+      doc.setFontSize(7);
+      doc.setTextColor(100, 116, 139);
+      const descLines = doc.splitTextToSize(need.description, sdtCardWidth - 6);
+      doc.text(descLines.slice(0, 2), cardX + 3, yPos + 52);
+    });
+    
+    yPos += sdtCardHeight + 15;
+
+    // Motivation Profile
+    const profile = getSDTMotivationProfile();
+    const profileCardHeight = 45;
+    
+    doc.setFillColor(236, 253, 245); // Light green
+    doc.setDrawColor(16, 185, 129);
+    doc.roundedRect(margin, yPos, contentWidth, profileCardHeight, 3, 3, 'FD');
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text(profile.title, pageWidth / 2, yPos + 12, { align: 'center' });
+    
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    const profileDescLines = doc.splitTextToSize(profile.description, contentWidth - 20);
+    doc.text(profileDescLines, pageWidth / 2, yPos + 22, { align: 'center' });
+    
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    const adviceLines = doc.splitTextToSize(profile.advice, contentWidth - 20);
+    doc.text(adviceLines, pageWidth / 2, yPos + 35, { align: 'center' });
+    
+    yPos += profileCardHeight + 15;
+
+    // Strongest and Weakest needs
+    const sortedNeeds = [...sdtNeeds].sort((a, b) => b.score - a.score);
+    const strongest = sortedNeeds[0];
+    const weakest = sortedNeeds[sortedNeeds.length - 1];
+    
+    const halfWidth = (contentWidth - 5) / 2;
+    
+    // Strongest
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor('#e2e8f0');
+    doc.roundedRect(margin, yPos, halfWidth, 30, 2, 2, 'FD');
+    
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text("Sterkste behoefte", margin + 5, yPos + 10);
+    doc.setFontSize(11);
+    doc.setTextColor(strongest.color);
+    doc.text(strongest.name, margin + 5, yPos + 20);
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Score: ${strongest.score.toFixed(2)}`, margin + 5, yPos + 27);
+    
+    // Weakest
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(margin + halfWidth + 5, yPos, halfWidth, 30, 2, 2, 'FD');
+    
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text("Focus punt", margin + halfWidth + 10, yPos + 10);
+    doc.setFontSize(11);
+    doc.setTextColor(weakest.color);
+    doc.text(weakest.name, margin + halfWidth + 10, yPos + 20);
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Score: ${weakest.score.toFixed(2)}`, margin + halfWidth + 10, yPos + 27);
+
+    // ==================== FOOTER ====================
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(150, 150, 150);
+      doc.text(`Pagina ${i} van ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      doc.text("VIBE Leiderschap Scan", margin, pageHeight - 10);
+    }
     
     doc.save("VIBE_Rapport.pdf");
   };
