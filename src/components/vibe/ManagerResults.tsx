@@ -207,7 +207,7 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
                     </div>
 
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="text-sm font-medium mb-2 text-primary">💡 Advies:</p>
+                      <p className="text-sm font-medium mb-2 text-primary">Advies:</p>
                       <p className="text-sm text-muted-foreground leading-relaxed">{advice}</p>
                     </div>
                   </Card>
@@ -263,7 +263,7 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-primary mb-2">📋 Interpretatie</p>
+                <p className="text-sm font-semibold text-primary mb-2">Interpretatie</p>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1">
                   {herzberg.adviceDetail.interpretation.map((item, i) => (
                     <li key={i}>{item}</li>
@@ -272,7 +272,7 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-primary mb-2">💡 Wat dit betekent</p>
+                <p className="text-sm font-semibold text-primary mb-2">Wat dit betekent</p>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1">
                   {herzberg.adviceDetail.meaning.map((item, i) => (
                     <li key={i}>{item}</li>
@@ -281,7 +281,7 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-primary mb-2">🎯 Prioriteiten</p>
+                <p className="text-sm font-semibold text-primary mb-2">Prioriteiten</p>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1">
                   {herzberg.adviceDetail.priorities.map((item, i) => (
                     <li key={i}>{item}</li>
@@ -290,7 +290,7 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-primary mb-2">✅ Concrete stappen</p>
+                <p className="text-sm font-semibold text-primary mb-2">Concrete stappen</p>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1">
                   {herzberg.adviceDetail.steps.map((item, i) => (
                     <li key={i}>{item}</li>
