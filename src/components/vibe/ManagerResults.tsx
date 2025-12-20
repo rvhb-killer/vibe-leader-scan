@@ -18,6 +18,7 @@ import {
   calculateManagerHerzbergAnalysis,
 } from "@/lib/managerVibeQuestions";
 import HerzbergMatrix from "./HerzbergMatrix";
+import SDTAnalysisManager from "./SDTAnalysisManager";
 import jsPDF from "jspdf";
 
 interface ManagerResultsProps {
@@ -160,6 +161,70 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
             </ResponsiveContainer>
           </Card>
 
+          {/* Detailed VIBE Results */}
+          <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
+            Gedetailleerde VIBE Scores
+          </h2>
+
+          <div className="space-y-6 mb-8">
+            {Object.keys(managerCategories).map((cat, index) => {
+              const score = categoryScores[cat] || 0;
+              const interpretation = getInterpretation(score);
+              const advice = getManagerAdvice(cat, score);
+              const categoryInfo = managerCategories[cat as keyof typeof managerCategories];
+
+              return (
+                <motion.div
+                  key={cat}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <Card
+                    className="p-6 shadow-md border-l-4"
+                    style={{ borderLeftColor: categoryInfo.color }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <h3 className="text-xl font-display font-semibold text-primary">{cat}</h3>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold" style={{ color: categoryInfo.color }}>
+                          {score.toFixed(2)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">/ 5.00</div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <span
+                        className="inline-block px-3 py-1 rounded-full text-sm font-medium"
+                        style={{
+                          backgroundColor: `${categoryInfo.color}20`,
+                          color: categoryInfo.color,
+                        }}
+                      >
+                        {interpretation}
+                      </span>
+                    </div>
+
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-sm font-medium mb-2 text-primary">💡 Advies:</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{advice}</p>
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* SDT Analysis for Managers */}
+          <SDTAnalysisManager
+            autonomyScore={categoryScores["Voice & Autonomy"] || 0}
+            competenceScore={
+              ((categoryScores["Impact & Purpose"] || 0) + (categoryScores["Bold Leadership"] || 0)) / 2
+            }
+            relatednessScore={categoryScores["Empathy & Recognition"] || 0}
+          />
+
           {/* Herzberg Analysis */}
           <Card className="p-8 shadow-lg mb-8 border-2 border-accent/20">
             <div className="flex items-center justify-center gap-2 mb-6">
@@ -234,61 +299,6 @@ const ManagerResults = ({ answers, onRestart }: ManagerResultsProps) => {
               </div>
             </motion.div>
           </Card>
-
-          {/* Detailed VIBE Results */}
-          <h2 className="text-2xl font-display font-semibold mb-6 text-center text-primary">
-            Gedetailleerde VIBE Scores
-          </h2>
-
-          <div className="space-y-6 mb-8">
-            {Object.keys(managerCategories).map((cat, index) => {
-              const score = categoryScores[cat] || 0;
-              const interpretation = getInterpretation(score);
-              const advice = getManagerAdvice(cat, score);
-              const categoryInfo = managerCategories[cat as keyof typeof managerCategories];
-
-              return (
-                <motion.div
-                  key={cat}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
-                  <Card
-                    className="p-6 shadow-md border-l-4"
-                    style={{ borderLeftColor: categoryInfo.color }}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-xl font-display font-semibold text-primary">{cat}</h3>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold" style={{ color: categoryInfo.color }}>
-                          {score.toFixed(2)}
-                        </div>
-                        <div className="text-sm text-muted-foreground">/ 5.00</div>
-                      </div>
-                    </div>
-
-                    <div className="mb-3">
-                      <span
-                        className="inline-block px-3 py-1 rounded-full text-sm font-medium"
-                        style={{
-                          backgroundColor: `${categoryInfo.color}20`,
-                          color: categoryInfo.color,
-                        }}
-                      >
-                        {interpretation}
-                      </span>
-                    </div>
-
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="text-sm font-medium mb-2 text-primary">💡 Advies:</p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{advice}</p>
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
