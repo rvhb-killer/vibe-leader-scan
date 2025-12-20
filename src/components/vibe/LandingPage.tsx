@@ -124,7 +124,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                       <VibeHighlight text="Bold Leadership" />
                     </h3>
                     <p className="text-muted-foreground">
-                      Leiderschap dat duidelijk, ondersteunend en aanwezig is. Geen micromanagement, wél richting en coaching.
+                      Leiderschap dat duidelijk, ondersteunend en aanwezig is. Geen micromanagement, wel richting en coaching.
                     </p>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   Meetbaar & Wetenschappelijk Onderbouwd
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Grootschalige meta-analyses tonen aan dat autonomie, zingeving, ondersteunend leiderschap en erkenning direct correleren met hogere motivatie, betere prestaties, verminderde burn-out en hogere retentie.
+                  Grootschalige meta-analyses tonen aan dat autonomie, zingeving, ondersteunend leiderschap en erkenning direct correleren met hogere motivatie, betere prestaties en verminderde burn-out.
                 </p>
               </Card>
 
@@ -183,7 +183,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   Directe Actiepunten
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  De VIBE-scan geeft je niet alleen scores, maar ook concrete, toepasbare adviezen per thema. Geen vaag giswerk — maar heldere stappen die je vandaag nog kunt nemen om je leiderschap te verbeteren.
+                  De VIBE-scan geeft je niet alleen scores, maar ook concrete, toepasbare adviezen per thema. Geen vaag giswerk, maar heldere stappen die je vandaag nog kunt nemen om je leiderschap te verbeteren.
                 </p>
               </Card>
 
@@ -192,7 +192,7 @@ const LandingPage = ({ onStart, onViewDashboard }: LandingPageProps) => {
                   Snel & Effectief
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  In slechts 5 minuten krijg je een visueel overzicht van je leiderschapsstijl en ontdek je waar de grootste kansen liggen. Perfect voor drukke leiders die wél impact willen maken.
+                  In slechts 5 minuten krijg je een visueel overzicht van je leiderschapsstijl en ontdek je waar de grootste kansen liggen. Perfect voor drukke leiders die wel impact willen maken.
                 </p>
               </Card>
             </div>
